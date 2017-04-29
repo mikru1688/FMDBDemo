@@ -25,7 +25,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     override func viewWillAppear(_ animated: Bool) {
         // 查詢資料
-        self.departmentDatas = Dao.sharedInstance().queryData()
+        self.departmentDatas = Dao.shared.queryData()
         
         if self.departmentDatas != nil {
             if self.departmentTV == nil {
@@ -60,7 +60,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         // 刪除
         if editingStyle == UITableViewCellEditingStyle.delete {
-            Dao.sharedInstance().deleteData(withDepartmentId: (self.departmentDatas?[indexPath.row].departmentId)!) // 刪除db資料
+            Dao.shared.deleteData(withDepartmentId: (self.departmentDatas?[indexPath.row].departmentId)!) // 刪除db資料
             self.departmentDatas?.remove(at: indexPath.row) // 移除集合裡面的資料
             tableView.deleteRows(at: [indexPath as IndexPath], with: .fade) // 移除畫面上tableView的資料
         }

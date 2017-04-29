@@ -9,19 +9,11 @@
 /// 單例(singleton)
 class Dao: NSObject {
     
-    private static var dao: Dao?
-    
+    static let shared = Dao()
+
     var fileName: String = "DEPARTMENT_DATA" // sqlite name
     var filePath: String = "" // sqlite path
     var database: FMDatabase! // FMDBConnection
-    
-    static func sharedInstance() -> Dao {
-        if self.dao == nil {
-            self.dao = Dao()
-        }
-        
-        return self.dao!
-    }
     
     private override init() {
         super.init()

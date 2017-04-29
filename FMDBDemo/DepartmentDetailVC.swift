@@ -77,10 +77,10 @@ class DepartmentDetailVC: UIViewController {
     func onClickAddOrEditBtn(_ sender: UIButton) {
         // 修改模式
         if self.department != nil {
-            Dao.sharedInstance().updateData(withDepartmentId: (self.department?.departmentId)!, departmentChineseName: (self.deptChNmTxtFld?.text)!, departmentEnglistName: (self.deptEnNmTxtFld?.text)!)
+            Dao.shared.updateData(withDepartmentId: (self.department?.departmentId)!, departmentChineseName: (self.deptChNmTxtFld?.text)!, departmentEnglistName: (self.deptEnNmTxtFld?.text)!)
         } else {
             // 新增模式
-            Dao.sharedInstance().insertData(withDepartmentChineseName: (self.deptChNmTxtFld?.text)!, departmentEnglishName: (self.deptEnNmTxtFld?.text)!)
+            Dao.shared.insertData(withDepartmentChineseName: (self.deptChNmTxtFld?.text)!, departmentEnglishName: (self.deptEnNmTxtFld?.text)!)
         }
         
         self.showMsg(message: self.department != nil ? "修改成功" : "新增成功")
