@@ -2,16 +2,18 @@
 //  Dao.swift
 //  FMDBDemo
 //
-//  Created by Frank.Chen on 2017/2/25.
-//  Copyright © 2017年 Frank.Chen. All rights reserved.
+//  Created by Frank.Chen on 2018/2/3.
+//  Copyright © 2018年 Frank.Chen. All rights reserved.
 //
 
-/// 單例(singleton)
+import UIKit
+import FMDB
+
 class Dao: NSObject {
     
     static let shared = Dao()
-
-    var fileName: String = "DEPARTMENT_DATA" // sqlite name
+    
+    var fileName: String = "DEPARTMENT_DATA.sqlite" // sqlite name
     var filePath: String = "" // sqlite path
     var database: FMDatabase! // FMDBConnection
     
@@ -20,13 +22,38 @@ class Dao: NSObject {
         
         // 取得sqlite在documents下的路徑(開啟連線用)
         self.filePath = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)[0] + "/" + self.fileName
+        
+        print("filePath: \(self.filePath)")
     }
     
     deinit {
         print("deinit: \(self)")
-    }    
+    }
     
-    /// 取得sqlite連線
+    /// 生成 .sqlite 檔案並創建表格，只有在 .sqlite 不存在時才會建立
+    func createTable() {
+        let fileManager: FileManager = FileManager.default
+        
+        // 判斷documents是否已存在該檔案
+        if !fileManager.fileExists(atPath: self.filePath) {
+            
+            // 開啟連線
+            if self.openConnection() {
+                let createTableSQL = """
+                    CREATE TABLE DEPARTMENT (
+                    DEPARTMENT_ID integer  NOT NULL  PRIMARY KEY DEFAULT 0,
+                    DEPT_CH_NM Varchar(100),
+                    DEPT_EN_NM Varchar(100))
+                """
+                self.database.executeStatements(createTableSQL)
+                print("file copy to: \(self.filePath)")
+            }
+        } else {
+            print("DID-NOT copy db file, file allready exists at path:\(self.filePath)")
+        }
+    }
+    
+    /// 取得 .sqlite 連線
     ///
     /// - Returns: Bool
     func openConnection() -> Bool {
@@ -43,7 +70,6 @@ class Dao: NSObject {
         }
         
         return isOpen
-        
     }
     
     /// 新增部門資料
@@ -54,9 +80,9 @@ class Dao: NSObject {
     func insertData(withDepartmentChineseName departmentChineseName: String, departmentEnglishName: String) {
         
         if self.openConnection() {
-            let insertSQL: String = "INSERT INTO DEPARTMENT (DEPARTMENT_ID, DEPT_CH_NM, DEPT_EN_NM) VALUES((SELECT IFNULL(MAX(DEPARTMENT_ID), 0) + 1 FROM DEPARTMENT), '\(departmentChineseName)', '\(departmentEnglishName)')"
+            let insertSQL: String = "INSERT INTO DEPARTMENT (DEPARTMENT_ID, DEPT_CH_NM, DEPT_EN_NM) VALUES((SELECT IFNULL(MAX(DEPARTMENT_ID), 0) + 1 FROM DEPARTMENT), ?, ?)"
             
-            if !self.database.executeStatements(insertSQL) {
+            if !self.database.executeUpdate(insertSQL, withArgumentsIn: [departmentChineseName, departmentEnglishName]) {
                 print("Failed to insert initial data into the database.")
                 print(database.lastError(), database.lastErrorMessage())
             }
@@ -98,12 +124,12 @@ class Dao: NSObject {
                 let dataLists: FMResultSet = try database.executeQuery(querySQL, values: nil)
                 
                 while dataLists.next() {
-                    let department: Department = Department(departmentId: Int(dataLists.int(forColumn: "DEPARTMENT_ID")), departmentChNm: dataLists.string(forColumn: "DEPT_CH_NM"), departmentEnNm: dataLists.string(forColumn: "DEPT_EN_NM"))
+                    let department: Department = Department(departmentId: Int(dataLists.int(forColumn: "DEPARTMENT_ID")), departmentChNm: dataLists.string(forColumn: "DEPT_CH_NM")!, departmentEnNm: dataLists.string(forColumn: "DEPT_EN_NM")!)
                     departmentDatas.append(department)
                 }
             } catch {
                 print(error.localizedDescription)
-            }                        
+            }
         }
         
         return departmentDatas
@@ -125,5 +151,4 @@ class Dao: NSObject {
             self.database.close()
         }
     }
-    
 }

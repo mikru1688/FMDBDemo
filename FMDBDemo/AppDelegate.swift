@@ -15,17 +15,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var mainVC: ViewController?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // 將bundle的部門資料的sqlite複製到documents
-        FileUtils.sharedInstance().copyFile(toDocuments: "DEPARTMENT_DATA")        
+       
+        Dao.shared.createTable()
         
-        window = UIWindow(frame: UIScreen.main.bounds)
-        mainVC = ViewController()
-        
-        // 設置以navigation bar為基底的application
-        let nav: UINavigationController = UINavigationController(rootViewController: mainVC!)
-        window?.rootViewController = nav
-        
-        window!.makeKeyAndVisible()
         return true
     }
 

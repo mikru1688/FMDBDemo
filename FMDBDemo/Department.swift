@@ -2,13 +2,13 @@
 //  Department.swift
 //  FMDBDemo
 //
-//  Created by Frank.Chen on 2017/2/25.
-//  Copyright © 2017年 Frank.Chen. All rights reserved.
+//  Created by Frank.Chen on 2018/2/3.
+//  Copyright © 2018年 Frank.Chen. All rights reserved.
 //
 
-/// 部門資料
+import UIKit
+
 class Department: NSObject {
-    
     var departmentId: Int
     var departmentChNm: String
     var departmentEnNm: String
